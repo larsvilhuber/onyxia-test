@@ -1,69 +1,60 @@
-# Docker image basic R image
+# Docker image R + Stata for Onyxia
 
 ## Purpose
 
-Many R replication packages have dependencies, which sometimes include the specific version of R (in particular before/after release of v4).
-This Docker image is meant to isolate and stabilize that environment, and should be portable across
-multiple operating system, as long as [Docker](https://docker.com) is available.
+Onyxia does not have Stata. This adds it.
 
 ## Build
 
-### Adjust the needed packages
+### Adjust versions in the Dockerfile
 
-See the [setup.R](setup.R) file, and update accordingly.
+The Dockerfile has a few version variables at the top. Adjust as needed. The base image is a Docker container that already runs on Onyxia, we are just adding as specific version of Stata. 
 
-> WARNING: not all packages might build, depending on whether the R base image has the relevant libraries. You might want to change R base image, or switch to another image from [rocker](https://hub.docker.com/u/rocker).
+### Build it
 
-### Setup info
-
-Set the `TAG` and `IMAGEID` accordingly.
-
-```
-TAG=v$(date +%F)
-MYIMG=aer-9999-8888
-MYHUBID=aeadataeditor
-```
-### Build the image
-
-```
-docker build  . -t $MYIMG:$TAG
-```
-or if using the newer build system 
-```
-DOCKER_BUILDKIT=1 docker build . -t $MYIMG:$TAG
+```bash
+docker build -t yourspace/image-name:image-tag .
 ```
 
-## Publish the image
+### Push it
 
-The resulting docker image can be uploaded to [Docker Hub](https://hub.docker.com/), if desired.
-
-```
-docker push $MYHUBID/${MYIMG}:$TAG
+```bash
+docker push yourspace/image-name:image-tag
 ```
 
-## Using the image
+## Configure Onyxia
 
-If using a pre-built image on [Docker Hub](https://hub.docker.com/repository/docker/larsvilhuber/):
+### Add the Stata license
 
-```
-docker run -it --rm $MYHUBID/${MYIMG}:$TAG
-```
+In your terminal, run 
 
-If using the image you just created:
-
-```
-docker run -it --rm $MYHUBID/${MYIMG}:$TAG
+```bash
+cat /usr/local/statanow19/stata.lic | base64 -w 0
 ```
 
-Somewhat more sophisticated, if you are in a project directory (for instance, the replication package you just downloaded), you can access it directly within the image as follows:
+and copy the output. 
 
+### Configure in Onyxia
+
+IN Onyxia, got to "My Secrets", create a new folder, e.g., `Stata`. 
+
+Then add a new variable, called `STATA_LIC_BASE64`. 
+
+Paste the base64 string you just copied. Be sure that there are no spaces in the string.
+
+### Configure an Onyxia service
+
+Under "Service Catalog", select the `Rstudio` service. 
+
+- Under `Docker image`, select `Custom image`, and add the path of your new container (`yourspace/image-name:image-tag`).
+- Under `Vault`, add the "path" to your "secret"  in the field `Secret`, e.g., `Stata`. This makes all variables under that secret available to the service.
+
+You can optionally rename and save this configuration.
+
+### Launch the service.
+
+Then launch the service. Once logged in, open a terminal in Rstudio, and run
+
+```bash
+/home/onyxia/work/statalic.sh
 ```
-docker run -it --rm -v $(pwd)/subdir:/code -w /code $MYHUBID/${MYIMG}:$TAG
-```
-
-
-You can now start to run code.
-
-## NOTE
-
-This entire process could be automated, using [Travis-CI](https://docs.travis-ci.com/user/docker/#pushing-a-docker-image-to-a-registry) or [Github Actions](https://github.com/marketplace/actions/build-and-push-docker-images). Not done yet.
