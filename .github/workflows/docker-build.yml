@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
   pull_request:
     branches:
       - main
@@ -37,9 +35,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,prefix=sha-
+            type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
@@ -77,9 +73,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata-vscode
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,prefix=sha-
+            type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push VSCode Docker image
