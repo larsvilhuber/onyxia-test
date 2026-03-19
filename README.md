@@ -1,8 +1,8 @@
-# Docker image R + Stata for Onyxia
+# Docker image with Stata for Onyxia
 
 ## Purpose
 
-Onyxia does not have Stata. This adds it.
+Onyxia does not have Stata. This adds it to a vanilla Rstudio image, and to a very complete VSCode image.
 
 ## Automated Build (GitHub Actions)
 
@@ -22,15 +22,12 @@ Configure the following secrets in your GitHub repository under **Settings → S
 The workflow pushes the image to `<DOCKERHUB_USERNAME>/onyxia-stata` with the following tags:
 
 - `latest` — always points to the most recent build from `main`
-- `main` — branch name tag
-- `v*` — version tags (e.g., `v1.0.0`) when you push a Git tag
-- `sha-<commit>` — a tag for every commit SHA
+- `YYYY-MM-DD` - date-based versions.
 
 ### Workflow triggers
 
 - **Push to `main`**: builds and pushes the image
 - **Pull request against `main`**: builds the image (but does not push)
-- **Git tag (`v*`)**: builds and pushes with the version tag
 - **Manual**: can be triggered from the Actions tab using the "Run workflow" button
 
 ## Manual Build
@@ -84,6 +81,11 @@ Under "Service Catalog", select the `Rstudio` service.
   This script will automatically configure the Stata license when the service starts.
 
 You can optionally rename and save this configuration.
+
+Two example configurations are here, and should work, if you have configured a `Stata` vault:
+
+- [Rstudio+Stata](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio-stata&version=2.4.2&s3=region-79669f20&service.image.custom.enabled=true&service.image.custom.version=«larsvilhuber%2Fonyxia-rstudio-stata%3Alatest»&vault.secret=«Stata»&autoLaunch=true)
+- [VScode+(stuff)+Stata](https://datalab.sspcloud.fr/launcher/ide/vscode-r-python-julia?name=vscode-r-python-julia-stata&version=2.5.2&s3=region-79669f20&service.image.pullPolicy=«Always»&service.image.custom.enabled=true&service.image.custom.version=«larsvilhuber%2Fonyxia-vscode-r-python-julia-stata%3Alatest»&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Flarsvilhuber%2Fonyxia-test%2Fmain%2Finit.sh»&vault.secret=«Stata»&autoLaunch=true)
 
 ### Launch the service
 
