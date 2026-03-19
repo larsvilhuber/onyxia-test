@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dockerfile*'
   pull_request:
     branches:
       - main
+    paths:
+      - 'Dockerfile*'
   workflow_dispatch:
 
 jobs:
@@ -14,6 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    strategy:
+      matrix:
+        include:
+          - image: onyxia-rstudio-stata
+            dockerfile: Dockerfile
+            cache_scope: rstudio
+          - image: onyxia-vscode-r-python-julia-stata
+            dockerfile: Dockerfile.vscode
+            cache_scope: vscode
 
     steps:
       - name: Checkout repository
@@ -33,7 +46,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-rstudio-stata
+          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/${{ matrix.image }}
           tags: |
             type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
@@ -42,47 +55,17 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ${{ matrix.dockerfile }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=rstudio
-          cache-to: type=gha,mode=max,scope=rstudio
+          cache-from: type=gha,scope=${{ matrix.cache_scope }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.cache_scope }}
 
-  build-and-push-vscode:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
+      - name: Push README to Docker Hub
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+        uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-vscode-r-python-julia-stata
-          tags: |
-            type=raw,value={{date 'YYYY-MM-DD'}}
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push VSCode Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.vscode
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=vscode
-          cache-to: type=gha,mode=max,scope=vscode
+          repository: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/${{ matrix.image }}
