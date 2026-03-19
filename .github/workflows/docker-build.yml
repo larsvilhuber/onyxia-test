@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
   pull_request:
     branches:
       - main
@@ -35,11 +33,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata
+          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-rstudio-stata
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,prefix=sha-
+            type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
@@ -75,11 +71,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata-vscode
+          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-vscode-r-python-julia-stata
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,prefix=sha-
+            type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push VSCode Docker image
