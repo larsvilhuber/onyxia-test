@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dockerfile*'
   pull_request:
     branches:
       - main
+    paths:
+      - 'Dockerfile*'
   workflow_dispatch:
 
 jobs:
@@ -48,6 +52,14 @@ jobs:
           cache-from: type=gha,scope=rstudio
           cache-to: type=gha,mode=max,scope=rstudio
 
+      - name: Push README to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/onyxia-rstudio-stata
+
   build-and-push-vscode:
     runs-on: ubuntu-latest
     permissions:
@@ -86,3 +98,11 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=vscode
           cache-to: type=gha,mode=max,scope=vscode
+
+      - name: Push README to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/onyxia-vscode-r-python-julia-stata
