@@ -33,7 +33,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata
+          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-rstudio-stata
           tags: |
             type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
@@ -71,7 +71,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata-vscode
+          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-vscode-r-python-julia-stata
           tags: |
             type=raw,value={{date 'YYYY-MM-DD'}}
             type=raw,value=latest,enable={{is_default_branch}}
