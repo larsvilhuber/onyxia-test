@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Onyxia does not have Stata. This adds it to a vanilla Rstudio image, and to a very complete VSCode image.
+[Onyxia (SSPCloud)](https://datalab.sspcloud.fr/) does not have Stata. This adds it to a vanilla Rstudio image, and to a very complete VSCode image.
 
 ## Automated Build (GitHub Actions)
 
@@ -23,6 +23,8 @@ The workflow pushes the image to `<DOCKERHUB_USERNAME>/onyxia-stata` with the fo
 
 - `latest` — always points to the most recent build from `main`
 - `YYYY-MM-DD` - date-based versions.
+
+For the original repository, these can be found at <https://hub.docker.com/repositories/larsvilhuber>.
 
 ### Workflow triggers
 
