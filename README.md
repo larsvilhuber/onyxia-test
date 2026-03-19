@@ -4,7 +4,36 @@
 
 Onyxia does not have Stata. This adds it.
 
-## Build
+## Automated Build (GitHub Actions)
+
+This repository includes a GitHub Actions workflow (`.github/workflows/docker-build.yml`) that automatically builds and pushes the Docker image to Docker Hub whenever changes are pushed to the `main` branch or a new tag is created.
+
+### Required Secrets
+
+Configure the following secrets in your GitHub repository under **Settings → Secrets and variables → Actions → Repository secrets**:
+
+| Secret name | Description |
+|---|---|
+| `DOCKERHUB_USERNAME` | Your Docker Hub username |
+| `DOCKERHUB_TOKEN` | Your Docker Hub access token (create one at [hub.docker.com/settings/security](https://hub.docker.com/settings/security)) |
+
+### Image name
+
+The workflow pushes the image to `<DOCKERHUB_USERNAME>/onyxia-stata` with the following tags:
+
+- `latest` — always points to the most recent build from `main`
+- `main` — branch name tag
+- `v*` — version tags (e.g., `v1.0.0`) when you push a Git tag
+- `sha-<commit>` — a tag for every commit SHA
+
+### Workflow triggers
+
+- **Push to `main`**: builds and pushes the image
+- **Pull request against `main`**: builds the image (but does not push)
+- **Git tag (`v*`)**: builds and pushes with the version tag
+- **Manual**: can be triggered from the Actions tab using the "Run workflow" button
+
+## Manual Build
 
 ### Adjust versions in the Dockerfile
 
