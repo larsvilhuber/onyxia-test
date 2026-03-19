@@ -28,6 +28,7 @@ COPY --from=stata /usr/local/stata/ /usr/local/stata/
 COPY statalic.sh /usr/local/stata/
 
 RUN chmod +x /usr/local/stata/statalic.sh \
-    && chmod a+rwX /usr/local/stata 
+    && chmod a+rwX /usr/local/stata \
+    && ln -s /usr/local/stata/stata-mp /usr/local/bin/stata-mp
 
 
