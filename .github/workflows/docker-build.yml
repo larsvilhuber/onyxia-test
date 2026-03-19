@@ -35,7 +35,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/onyxia-stata
+          images: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/onyxia-stata
           tags: |
             type=ref,event=branch
             type=ref,event=tag
